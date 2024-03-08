@@ -85,9 +85,7 @@
               aria-label="Search"
             />
             <!-- search button -->
-            <button class="searchBtn btn btn-outline-success" type="submit">
-              Search
-            </button>
+            <button class="searchBtn btn btn-outline-success">Search</button>
           </form>
         </div>
       </div>
@@ -162,93 +160,105 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-      const gamesCont = document.querySelector(".container");
+      let gamesCont = document.querySelector(".container");
+
       const gamesRow = document.querySelector(".row");
-      async function init() {
-        async function gamesList() {
-          const response = await fetch(
-            "https://free-to-play-games-database.p.rapidapi.com/api/games?limit=1",
+      gamesRow.innerHTML = "";
+      let searchGames = document.querySelector(".searchBtn");
+      let input = document.querySelector(".searchInput");
 
-            {
-              headers: {
-                "X-RapidAPI-Key":
-                  "079f6c8694mshf8f7075a903dcd7p10b4b2jsnce604652a163",
-                "X-RapidAPI-Host": "free-to-play-games-database.p.rapidapi.com",
-              },
-            }
-          );
-          const data = await response.json();
+      async function gamesList(search = null) {
+        const response = await fetch(
+          "https://free-to-play-games-database.p.rapidapi.com/api/games",
 
-          data.forEach((games) => {
-            let column = document.createElement("div");
-            column.classList.add("col-lg-4");
-            column.classList.add("col-md-6");
-            column.classList.add("col-sm-12");
-            column.classList.add("my-2");
+          {
+            headers: {
+              "X-RapidAPI-Key":
+                "079f6c8694mshf8f7075a903dcd7p10b4b2jsnce604652a163",
+              "X-RapidAPI-Host": "free-to-play-games-database.p.rapidapi.com",
+            },
+          }
+        );
+        const data = await response.json();
 
-            let gameCard = document.createElement("div");
-            gameCard.classList.add("gameCard");
-
-            let gameImg = document.createElement("img");
-            gameImg.classList.add("card-img-top");
-            gameImg.classList.add("p-2");
-
-            if (games.thumbnail) {
-              gameImg.src = games.thumbnail;
-            }
-
-            let gameInfo = document.createElement("div");
-            gameInfo.classList.add("card-body");
-            gameInfo.classList.add("m-2");
-
-            let gameTitle = document.createElement("h4");
-            gameTitle.innerText = games.title;
-
-            let desc = document.createElement("h5");
-            desc.innerText = "Description";
-
-            let gameDescription = document.createElement("h6");
-            gameDescription.innerText = games.short_description;
-
-            let buttonContainer = document.createElement("div");
-            buttonContainer.classList.add("d-flex");
-            buttonContainer.classList.add("justify-content-between");
-            buttonContainer.classList.add("align-items-center");
-            buttonContainer.classList.add("m-3");
-
-            let buttonGroup = document.createElement("div");
-            buttonGroup.classList.add("btn-group");
-
-            let play = document.createElement("button");
-            play.innerText = "Play Now ";
-            play.classList.add("btn");
-            play.classList.add("btn-sm");
-            play.classList.add("btn-outline-secondary");
-
-            let favorites = document.createElement("button");
-            favorites.innerText = "Add To My Favorites";
-            favorites.classList.add("btn");
-            favorites.classList.add("btn-sm");
-            favorites.classList.add("btn-outline-secondary");
-
-            let free = document.createElement("small");
-            free.classList.add("free");
-            free.innerText = "Free";
-            free.classList.add("text-white-50");
-
-            gameInfo.append(gameTitle, desc, gameDescription);
-            buttonGroup.append(play, favorites);
-            buttonContainer.append(buttonGroup, free);
-            gameCard.append(gameImg, gameInfo, buttonContainer);
-            column.append(gameCard);
-            gamesRow.append(column);
-            gamesCont.append(gamesRow);
+        let game = data;
+        if (search) {
+          game = data.filter((gameLst) => {
+            return gameLst.short_description.includes(search);
           });
         }
-        gamesList();
-      }
 
-      init();
+        game.forEach((games) => {
+          let column = document.createElement("div");
+          column.classList.add("col-lg-4");
+          column.classList.add("col-md-6");
+          column.classList.add("col-sm-12");
+          column.classList.add("my-2");
+
+          let gameCard = document.createElement("div");
+          gameCard.classList.add("gameCard");
+
+          let gameImg = document.createElement("img");
+          gameImg.classList.add("card-img-top");
+          gameImg.classList.add("p-2");
+
+          if (games.thumbnail) {
+            gameImg.src = games.thumbnail;
+          }
+
+          let gameInfo = document.createElement("div");
+          gameInfo.classList.add("card-body");
+          gameInfo.classList.add("m-2");
+
+          let gameTitle = document.createElement("h4");
+          gameTitle.innerText = games.title;
+
+          let desc = document.createElement("h5");
+          desc.innerText = "Description";
+
+          let gameDescription = document.createElement("h6");
+          gameDescription.innerText = games.short_description;
+
+          let buttonContainer = document.createElement("div");
+          buttonContainer.classList.add("d-flex");
+          buttonContainer.classList.add("justify-content-between");
+          buttonContainer.classList.add("align-items-center");
+          buttonContainer.classList.add("m-3");
+
+          let buttonGroup = document.createElement("div");
+          buttonGroup.classList.add("btn-group");
+
+          let play = document.createElement("button");
+          play.innerText = "Play Now ";
+          play.classList.add("btn");
+          play.classList.add("btn-sm");
+          play.classList.add("btn-outline-secondary");
+
+          let favorites = document.createElement("button");
+          favorites.innerText = "Add To My Favorites";
+          favorites.classList.add("btn");
+          favorites.classList.add("btn-sm");
+          favorites.classList.add("btn-outline-secondary");
+
+          let free = document.createElement("small");
+          free.classList.add("free");
+          free.innerText = "Free";
+          free.classList.add("text-white-50");
+
+          gameInfo.append(gameTitle, desc, gameDescription);
+          buttonGroup.append(play, favorites);
+          buttonContainer.append(buttonGroup, free);
+          gameCard.append(gameImg, gameInfo, buttonContainer);
+          column.append(gameCard);
+          gamesRow.append(column);
+          gamesCont.append(gamesRow);
+        });
+      }
+      searchGames.addEventListener("click", function (a) {
+        a.preventDefault();
+        gamesList(input.value);
+      });
+      gamesList();
       // id="gameImg"
       // id="gameTitle"
       // id="gameDescription"
